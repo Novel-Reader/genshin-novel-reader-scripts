@@ -1,6 +1,6 @@
 # genshin-novel-reader-scripts
 
-统一维护 Genshin Novel Reader 后端开发环境、数据库和部署辅助脚本。三个 API 仓库仍独立开发；本项目集中提供共享服务配置、SQL 版本和初始化/更新流程。
+统一维护 Genshin Novel Reader 后端开发环境、数据库初始化结构和部署辅助脚本。三个 API 仓库仍独立开发；本项目集中提供共享服务配置与初始化/更新流程。
 
 ## 目录结构
 
@@ -8,11 +8,10 @@
 genshin-novel-reader-scripts/
   docker-compose.yml       # 唯一的本地 MariaDB/Redis 编排入口
   .env.example             # 共享开发配置模板
-  sql/                     # 数据库初始化及版本升级 SQL
+  sql/init.sql             # 新数据库完整结构
   scripts/init.sh          # 克隆代码并安装依赖
   scripts/update.sh        # 快进更新各仓库并重新安装依赖
   scripts/configure.py     # 从 .env 生成后端所需配置
-  scripts/db-upgrade.sh    # 执行数据库版本升级
 ```
 
 ## 初始化
@@ -45,17 +44,9 @@ docker compose up -d
 
 ## 数据库
 
-MariaDB 数据存放在项目内的 `data/mysql/`，不再绑定任何开发者个人绝对路径。首次创建数据目录时，Compose 会自动执行 `sql/init.sql` 创建数据库；已有数据目录不会重复初始化。
+MariaDB 数据存放在项目内的 `data/mysql/`，不再绑定任何开发者个人绝对路径。首次创建数据目录时，Compose 会自动执行 `sql/init.sql`，建立当前版本的完整数据库结构；已有数据目录不会重复初始化。
 
-按版本顺序执行升级（SQL 不具备重复执行保护，请只对尚未升级到相应版本的数据库运行）：
-
-```bash
-bash scripts/db-upgrade.sh all
-# 或指定单个版本
-bash scripts/db-upgrade.sh 1.0
-```
-
-新增/修改数据库升级语句只提交到本项目的 `sql/`，按版本号创建目录。执行升级前应先备份数据库。
+当前项目采用全新初始化方式，不维护历史版本迁移脚本。需要重建数据库时，先备份要保留的数据，再停止服务并清空/替换 `data/mysql/` 后启动 MariaDB。不要在有重要数据的目录上直接执行重置操作。
 
 ## 更新
 
@@ -63,10 +54,10 @@ bash scripts/db-upgrade.sh 1.0
 bash scripts/update.sh
 ```
 
-更新脚本会先更新本项目（若它是 Git 仓库），再对各后端执行 `git pull --ff-only`，发现本地未提交改动时会停止，避免覆盖工作区；成功拉取后重新生成配置并安装依赖。该脚本不升级数据库，SQL 版本需由维护者确认后手动执行。
+更新脚本会先更新本项目（若它是 Git 仓库），再对各后端执行 `git pull --ff-only`，发现本地未提交改动时会停止，避免覆盖工作区；成功拉取后重新生成配置并安装依赖。数据库结构仅在 MariaDB 首次初始化空数据目录时创建。
 
 ## 配置说明
 
-`.env` 是本地共享配置的唯一输入，不要提交该文件。`scripts/configure.py` 按后端当前配置格式生成 Node 的 `src/config/config-local.json` 和 Go 的 `config/config.json`。Go 仓库目前没有本地配置覆盖文件，因此生成的 `config/config.json` 会显示为工作区修改；更新脚本会只允许这一项生成配置并在快进拉取时自动暂存/恢复它，其他本地修改仍会阻止更新。Python API 后端目前没有应用代码/配置格式，待仓库定义后再补充生成规则。
+`.env` 是本地共享配置的唯一输入，不要提交该文件。`scripts/configure.py` 按后端当前配置格式生成 Node 的 `src/config/config-local.json` 和 Go 的 `config/config.json`；Go 仓库会忽略该生成文件。Python API 后端目前没有应用代码/配置格式，待仓库定义后再补充生成规则。
 
-MariaDB/Redis 只由本项目的 Compose 管理。后端仓库中遗留的 Compose/SQL 文件仅作为历史内容；新的服务配置和升级语句应以本项目为准。
+MariaDB/Redis 只由本项目的 Compose 管理。后端仓库中的数据库配置和 SQL 初始化结构不再单独维护。

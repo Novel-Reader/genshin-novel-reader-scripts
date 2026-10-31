@@ -24,7 +24,7 @@ check_repo() {
   status="$(git -C "$dir" status --porcelain --untracked-files=all)"
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    if [[ "$name" == "genshin-novel-reader-api-go" && "$line" == " M config/config.json" ]]; then
+    if [[ "$name" == "genshin-novel-reader-api-go" && ( "$line" == " M config/config.json" || "$line" == " D config/config.json" ) ]]; then
       continue
     fi
     printf 'Skipping %s because it has local changes (%s). Commit or stash them, then rerun.\n' "$name" "$line" >&2
