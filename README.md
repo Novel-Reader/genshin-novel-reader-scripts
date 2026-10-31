@@ -12,6 +12,7 @@ genshin-novel-reader-scripts/
   scripts/init.sh          # 克隆代码并安装依赖
   scripts/update.sh        # 快进更新各仓库并重新安装依赖
   scripts/configure.py     # 从 .env 生成后端所需配置
+  scripts/start-python-api.sh # 启动 Python Flask API
 ```
 
 ## 初始化
@@ -39,6 +40,14 @@ bash scripts/init.sh
 ```bash
 docker compose up -d
 ```
+
+Python Flask API 初始化依赖后可通过以下脚本启动：
+
+```bash
+bash scripts/start-python-api.sh
+```
+
+默认监听 `127.0.0.1:5000`，可通过 `FLASK_HOST` 和 `PYTHON_PORT` 环境变量覆盖。
 
 默认后端从本机连接数据库，因此配置生成的地址是 `127.0.0.1`。如果后端也运行在 Compose 网络容器中，将 `.env` 中的 `BACKEND_MYSQL_HOST`/`BACKEND_REDIS_HOST` 设为对应服务名（`db`/`redis`）后重新生成配置。
 
