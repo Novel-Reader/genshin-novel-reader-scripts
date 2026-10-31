@@ -57,6 +57,24 @@ MariaDB 数据存放在项目内的 `data/mysql/`，不再绑定任何开发者�
 
 当前项目采用全新初始化方式，不维护历史版本迁移脚本。需要重建数据库时，先备份要保留的数据，再停止服务并清空/替换 `data/mysql/` 后启动 MariaDB。不要在有重要数据的目录上直接执行重置操作。
 
+### 创建管理员用户
+
+用户表的 `role` 字段用于区分权限，管理员角色值为 `admin`。Node API 使用 scrypt 哈希存储密码，因此先进入 `genshin-novel-reader-api-node` 目录，用实际密码生成哈希：
+
+```bash
+cd ../genshin-novel-reader-api-node
+node -e 'require("./src/utils/password").hashPassword("替换成你的强密码").then(console.log)'
+```
+
+复制命令输出的完整 `scrypt$...` 字符串，然后连接 MariaDB 执行以下 SQL，并替换邮箱和哈希值：
+
+```sql
+INSERT INTO `novel`.`user` (`name`, `email`, `password`, `role`)
+VALUES ('admin', 'admin@example.com', '替换为生成的scrypt哈希', 'admin');
+```
+
+不要把明文密码写入数据库。密码哈希命令应从 Node API 仓库根目录运行。
+
 ## 更新
 
 ```bash

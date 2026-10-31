@@ -22,36 +22,32 @@ install_dependencies() {
   local repo="$1"
   local dir="$WORKSPACE_DIR/$repo"
 
-  if [[ -f "$dir/package-lock.json" ]]; then
-    (cd "$dir" && npm ci)
-  elif [[ -f "$dir/package.json" ]]; then
-    (cd "$dir" && npm install)
+  # Install JS dependencies
+  if [[ -f "$dir/package.json" ]]; then
+    (cd "$dir" && npm install --force)
+  fi
+  if [[ -f "$dir/react/package.json" ]]; then
+    (cd "$dir/react" && npm install --force)
   fi
 
-  if [[ -f "$dir/react/package-lock.json" ]]; then
-    (cd "$dir/react" && npm ci)
-  elif [[ -f "$dir/react/package.json" ]]; then
-    (cd "$dir/react" && npm install)
-  fi
-
+  # Install Golang dependencies
   if [[ -f "$dir/go.mod" ]]; then
     (cd "$dir" && go mod download)
   fi
 
+  # Install Python dependencies
   if [[ -f "$dir/requirements.txt" ]]; then
     python3 -m venv "$dir/.venv"
     "$dir/.venv/bin/python" -m pip install --upgrade pip
     "$dir/.venv/bin/pip" install -r "$dir/requirements.txt"
-  elif [[ -f "$dir/pyproject.toml" ]]; then
-    python3 -m venv "$dir/.venv"
-    "$dir/.venv/bin/python" -m pip install --upgrade pip
-    "$dir/.venv/bin/pip" install -e "$dir"
-  else
-    printf 'No Python dependency manifest found in %s; skipping Python dependencies.\n' "$repo"
   fi
 }
 
 if [[ ! -f "$PROJECT_DIR/.env" ]]; then
+  if [[ ! -f "$PROJECT_DIR/.env.example" ]]; then
+    printf 'Missing environment template: %s/.env.example\n' "$PROJECT_DIR" >&2
+    exit 1
+  fi
   cp "$PROJECT_DIR/.env.example" "$PROJECT_DIR/.env"
   printf 'Created %s; edit it before using non-development credentials.\n' "$PROJECT_DIR/.env"
 fi
