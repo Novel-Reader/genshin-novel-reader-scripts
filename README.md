@@ -33,7 +33,7 @@ workspace/
 bash scripts/init.sh
 ```
 
-脚本会创建 `.env`（若不存在）、克隆缺少的仓库、生成 Node/Go 配置并安装依赖。已有 Git 仓库会保留并复用；同名非 Git 目录会拒绝覆盖。Node 项目使用 `npm ci`，同时安装 `react/` 前端依赖；Go 使用 `go mod download`；Python API 项目有 `requirements.txt` 时安装该清单，有 `pyproject.toml` 时执行可编辑安装。如果 Python API 仓库尚无依赖清单，则跳过。Node 仓库内部的临时 Python 脚本不再安装依赖。
+脚本会创建 `.env`（若不存在）、克隆缺少的仓库、生成 Node/Go 配置并安装依赖。已有 Git 仓库会保留并复用；同名非 Git 目录会拒绝覆盖。Node 项目使用 `npm ci`，同时安装 `react/` 前端依赖；Go 使用 `go mod download`；Python API 项目有 `requirements.txt` 时安装该清单，有 `pyproject.toml` 时执行可编辑安装。如果 Python API 仓库尚无依赖清单，则跳过。
 
 初始化后检查并修改 `.env`，再启动数据库：
 
@@ -48,6 +48,7 @@ bash scripts/start-python-api.sh
 ```
 
 默认监听 `127.0.0.1:5000`，可通过 `FLASK_HOST` 和 `PYTHON_PORT` 环境变量覆盖。
+Node API 会调用 `.env` 中的 `PYTHON_API_URL`（默认 `http://127.0.0.1:5000`）访问 Python API；本地开发时需同时运行 Flask 服务和 Node API。
 
 默认后端从本机连接数据库，因此配置生成的地址是 `127.0.0.1`。如果后端也运行在 Compose 网络容器中，将 `.env` 中的 `BACKEND_MYSQL_HOST`/`BACKEND_REDIS_HOST` 设为对应服务名（`db`/`redis`）后重新生成配置。
 
