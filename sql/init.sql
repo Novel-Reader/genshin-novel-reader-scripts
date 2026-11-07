@@ -9,7 +9,8 @@ CREATE TABLE `user` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `book` (
@@ -24,7 +25,9 @@ CREATE TABLE `book` (
   `size` int unsigned NOT NULL DEFAULT 0 COMMENT 'Content length in UTF-16 code units (JavaScript String.length)',
   `tag` varchar(50) DEFAULT NULL,
   `download_count` int DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_book_tag` (`tag`),
+  KEY `idx_book_download_count` (`download_count`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `comment` (
@@ -33,7 +36,9 @@ CREATE TABLE `comment` (
   `author` varchar(255) DEFAULT NULL,
   `detail` longtext DEFAULT NULL,
   `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_comment_book_id_id` (`book_id`, `id`),
+  CONSTRAINT `fk_comment_book` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `user_book` (
@@ -49,6 +54,7 @@ CREATE TABLE `download_info` (
   `bookid` int NOT NULL,
   `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `uk_download_info_user_book` (`userid`, `bookid`),
+  KEY `idx_download_info_bookid` (`bookid`),
   CONSTRAINT `download_info_user_foreign_key` FOREIGN KEY (`userid`) REFERENCES `user` (`id`),
   CONSTRAINT `download_info_book_foreign_key` FOREIGN KEY (`bookid`) REFERENCES `book` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
