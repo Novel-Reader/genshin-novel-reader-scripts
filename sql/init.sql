@@ -4,24 +4,24 @@ USE novel;
 
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
   `avatar` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `role` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `book` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
   `cover_photo` varchar(255) DEFAULT NULL,
   `author` varchar(255) DEFAULT NULL,
   `brief` varchar(300) DEFAULT NULL,
   `detail` longtext DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `price` decimal(11,2) DEFAULT NULL,
-  `size` int NOT NULL,
+  `size` int unsigned NOT NULL DEFAULT 0 COMMENT 'Content length in UTF-16 code units (JavaScript String.length)',
   `tag` varchar(50) DEFAULT NULL,
   `download_count` int DEFAULT 0,
   PRIMARY KEY (`id`)
