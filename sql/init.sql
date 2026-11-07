@@ -37,20 +37,18 @@ CREATE TABLE `comment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `user_book` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `userid` int NOT NULL,
   `bookid` int NOT NULL,
-  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_book` (`userid`, `bookid`),
   CONSTRAINT `fk_userid` FOREIGN KEY (`userid`) REFERENCES `user` (`id`),
   CONSTRAINT `fk_bookid` FOREIGN KEY (`bookid`) REFERENCES `book` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `download_info` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `userid` int NOT NULL,
   `bookid` int NOT NULL,
   `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_download_info_user_book` (`userid`, `bookid`),
   CONSTRAINT `download_info_user_foreign_key` FOREIGN KEY (`userid`) REFERENCES `user` (`id`),
   CONSTRAINT `download_info_book_foreign_key` FOREIGN KEY (`bookid`) REFERENCES `book` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
