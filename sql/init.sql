@@ -20,7 +20,7 @@ CREATE TABLE `book` (
   `author` varchar(255) DEFAULT NULL,
   `brief` varchar(300) DEFAULT NULL,
   `detail` longtext DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP(6),
   `price` decimal(11,2) DEFAULT NULL,
   `size` int unsigned NOT NULL DEFAULT 0 COMMENT 'Content length in UTF-16 code units (JavaScript String.length)',
   `tag` varchar(50) DEFAULT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE `comment` (
   `book_id` int DEFAULT NULL,
   `author` varchar(255) DEFAULT NULL,
   `detail` longtext DEFAULT NULL,
-  `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`id`),
   KEY `idx_comment_book_id_id` (`book_id`, `id`),
   CONSTRAINT `fk_comment_book` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
@@ -52,7 +52,7 @@ CREATE TABLE `user_book` (
 CREATE TABLE `download_info` (
   `userid` int NOT NULL,
   `bookid` int NOT NULL,
-  `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime(6) DEFAULT CURRENT_TIMESTAMP(6),
   UNIQUE KEY `uk_download_info_user_book` (`userid`, `bookid`),
   KEY `idx_download_info_bookid` (`bookid`),
   CONSTRAINT `download_info_user_foreign_key` FOREIGN KEY (`userid`) REFERENCES `user` (`id`),
