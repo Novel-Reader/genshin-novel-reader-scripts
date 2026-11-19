@@ -1,6 +1,6 @@
 # genshin-novel-reader-scripts
 
-统一维护 Genshin Novel Reader 后端开发环境、数据库初始化结构和部署辅助脚本。三个 API 仓库仍独立开发；本项目集中提供共享服务配置与初始化/更新流程。
+统一维护 Genshin Novel Reader 后端开发环境、数据库初始化结构和部署辅助脚本。Node 与 Python API 仓库仍独立开发；本项目集中提供共享服务配置与初始化/更新流程。
 
 ## 项目声明与许可证
 
@@ -21,13 +21,12 @@ genshin-novel-reader-scripts/
 
 ## 初始化
 
-需要 Git、Docker Compose v2、Node.js/npm、Go、Python 3 和 pip。将本项目克隆到工作区目录下，与三个后端仓库并列：
+需要 Git、Docker Compose v2、Node.js/npm、Python 3 和 pip。将本项目克隆到工作区目录下，与两个后端仓库并列：
 
 ```text
 workspace/
   genshin-novel-reader-scripts/
   genshin-novel-reader-api-node/
-  genshin-novel-reader-api-go/
   genshin-novel-reader-api-python/
 ```
 
@@ -37,7 +36,7 @@ workspace/
 bash scripts/init.sh
 ```
 
-脚本会创建 `.env`（若不存在）、克隆缺少的仓库、生成 Node/Go 配置并安装依赖。已有 Git 仓库会保留并复用；同名非 Git 目录会拒绝覆盖。Node 项目使用 `npm ci`，同时安装 `react/` 前端依赖；Go 使用 `go mod download`；Python API 项目有 `requirements.txt` 时安装该清单，有 `pyproject.toml` 时执行可编辑安装。如果 Python API 仓库尚无依赖清单，则跳过。
+脚本会创建 `.env`（若不存在）、克隆缺少的仓库、生成 Node 配置并安装依赖。已有 Git 仓库会保留并复用；同名非 Git 目录会拒绝覆盖。Node 项目安装 npm 依赖，同时安装 `react/` 前端依赖；Python API 项目有 `requirements.txt` 时安装该清单，有 `pyproject.toml` 时执行可编辑安装。如果 Python API 仓库尚无依赖清单，则跳过。
 
 初始化后检查并修改 `.env`，再启动数据库：
 
@@ -86,10 +85,10 @@ VALUES ('admin', 'admin@example.com', '替换为生成的scrypt哈希', 'admin')
 bash scripts/update.sh
 ```
 
-更新脚本会先更新本项目（若它是 Git 仓库），再对各后端执行 `git pull --ff-only`，发现本地未提交改动时会停止，避免覆盖工作区；成功拉取后重新生成配置并安装依赖。数据库结构仅在 MariaDB 首次初始化空数据目录时创建。
+更新脚本会先更新本项目（若它是 Git 仓库），再对 Node 和 Python API 仓库执行 `git pull --ff-only`，发现本地未提交改动时会停止，避免覆盖工作区；成功拉取后重新生成配置并安装依赖。数据库结构仅在 MariaDB 首次初始化空数据目录时创建。
 
 ## 配置说明
 
-`.env` 是本地共享配置的唯一输入，不要提交该文件。`scripts/configure.py` 按后端当前配置格式生成 Node 的 `src/config/config-local.json` 和 Go 的 `config/config.json`；Go 仓库会忽略该生成文件。Python API 后端目前没有应用代码/配置格式，待仓库定义后再补充生成规则。
+`.env` 是本地共享配置的唯一输入，不要提交该文件。`scripts/configure.py` 按 Node API 当前配置格式生成 `src/config/config-local.json`。Python API 后端目前没有应用代码/配置格式，待仓库定义后再补充生成规则。
 
 MariaDB/Redis 只由本项目的 Compose 管理。后端仓库中的数据库配置和 SQL 初始化结构不再单独维护。

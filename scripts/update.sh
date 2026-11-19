@@ -24,9 +24,6 @@ check_repo() {
   status="$(git -C "$dir" status --porcelain --untracked-files=all)"
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    if [[ "$name" == "genshin-novel-reader-api-go" && ( "$line" == " M config/config.json" || "$line" == " D config/config.json" ) ]]; then
-      continue
-    fi
     printf 'Skipping %s because it has local changes (%s). Commit or stash them, then rerun.\n' "$name" "$line" >&2
     return 1
   done <<< "$status"
@@ -46,14 +43,12 @@ if [[ -d "$PROJECT_DIR/.git" ]]; then
   check_repo genshin-novel-reader-scripts
 fi
 check_repo genshin-novel-reader-api-node
-check_repo genshin-novel-reader-api-go
 check_repo genshin-novel-reader-api-python
 
 if [[ -d "$PROJECT_DIR/.git" ]]; then
   update_repo genshin-novel-reader-scripts
 fi
 update_repo genshin-novel-reader-api-node
-update_repo genshin-novel-reader-api-go
 update_repo genshin-novel-reader-api-python
 
 python3 "$SCRIPT_DIR/configure.py"
@@ -68,10 +63,6 @@ if [[ -f "$WORKSPACE_DIR/genshin-novel-reader-api-node/react/package-lock.json" 
 elif [[ -f "$WORKSPACE_DIR/genshin-novel-reader-api-node/react/package.json" ]]; then
   (cd "$WORKSPACE_DIR/genshin-novel-reader-api-node/react" && npm install)
 fi
-if [[ -f "$WORKSPACE_DIR/genshin-novel-reader-api-go/go.mod" ]]; then
-  (cd "$WORKSPACE_DIR/genshin-novel-reader-api-go" && go mod download)
-fi
-
 python_dir="$WORKSPACE_DIR/genshin-novel-reader-api-python"
 if [[ -f "$python_dir/requirements.txt" ]]; then
   python3 -m venv "$python_dir/.venv"

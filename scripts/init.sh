@@ -30,11 +30,6 @@ install_dependencies() {
     (cd "$dir/react" && npm install --force)
   fi
 
-  # Install Golang dependencies
-  if [[ -f "$dir/go.mod" ]]; then
-    (cd "$dir" && go mod download)
-  fi
-
   # Install Python dependencies
   if [[ -f "$dir/requirements.txt" ]]; then
     python3 -m venv "$dir/.venv"
@@ -53,13 +48,11 @@ if [[ ! -f "$PROJECT_DIR/.env" ]]; then
 fi
 
 clone_if_missing genshin-novel-reader-api-node https://github.com/Novel-Reader/genshin-novel-reader-api-node.git
-clone_if_missing genshin-novel-reader-api-go https://github.com/Novel-Reader/genshin-novel-reader-api-go.git
 clone_if_missing genshin-novel-reader-api-python https://github.com/Novel-Reader/genshin-novel-reader-api-python.git
 
 python3 "$SCRIPT_DIR/configure.py"
 
 install_dependencies genshin-novel-reader-api-node
-install_dependencies genshin-novel-reader-api-go
 install_dependencies genshin-novel-reader-api-python
 
 printf '\nInitialization complete. Start shared services with:\n'

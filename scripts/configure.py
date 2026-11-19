@@ -41,8 +41,6 @@ def main():
     database = values.get("MYSQL_DATABASE", "novel")
     redis_host = values.get("BACKEND_REDIS_HOST", "127.0.0.1")
     redis_port = int(values.get("REDIS_PORT", "6379"))
-    redis_password = values.get("REDIS_PASSWORD", "")
-
     node_dir = WORKSPACE_DIR / "genshin-novel-reader-api-node"
     if node_dir.is_dir():
         write_json(
@@ -56,27 +54,6 @@ def main():
                 "redisHost": redis_host,
                 "redisPort": str(redis_port),
                 "pythonApiUrl": values.get("PYTHON_API_URL", "http://127.0.0.1:5000"),
-            },
-        )
-
-    go_dir = WORKSPACE_DIR / "genshin-novel-reader-api-go"
-    if go_dir.is_dir():
-        write_json(
-            go_dir / "config/config.json",
-            {
-                "port": values.get("GO_PORT", "8081"),
-                "mysql": {
-                    "host": mysql_host,
-                    "port": mysql_port,
-                    "username": mysql_user,
-                    "password": mysql_password,
-                    "database": database,
-                },
-                "redis": {
-                    "host": redis_host,
-                    "port": redis_port,
-                    "password": redis_password,
-                },
             },
         )
 
